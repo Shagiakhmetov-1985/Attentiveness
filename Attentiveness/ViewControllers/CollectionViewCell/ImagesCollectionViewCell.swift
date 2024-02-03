@@ -13,6 +13,7 @@ class ImagesCollectionViewCell: UICollectionViewCell {
     private let picture = UIImageView()
     private var imageCell = String()
     private var imageSelect = String()
+    private var indexCell = Int()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,12 +25,21 @@ class ImagesCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func imageForCell(image: String, imageTap: String) {
+    func imageForCell(image: String, imageTap: String, index: Int) {
         let size = UIImage.SymbolConfiguration(pointSize: 25)
         picture.image = UIImage(systemName: image, withConfiguration: size)
         picture.tintColor = .white
+        setImages(image: image, imageTap: imageTap)
+        setIndex(index: index)
+    }
+    
+    private func setImages(image: String, imageTap: String) {
         imageCell = image
         imageSelect = imageTap
+    }
+    
+    private func setIndex(index: Int) {
+        indexCell = index
     }
     
     private func setupDesign() {
@@ -52,9 +62,6 @@ extension ImagesCollectionViewCell {
 extension ImagesCollectionViewCell {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard imageCell == imageSelect else { return }
-        UIView.animate(withDuration: 0.5) { [self] in
-            layer.opacity = 0
-        }
-        delegate.didTapCell(image: imageCell)
+        delegate.didTapCell(image: imageCell, index: indexCell)
     }
 }

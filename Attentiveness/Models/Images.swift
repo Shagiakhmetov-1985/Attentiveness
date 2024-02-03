@@ -35,11 +35,11 @@ enum Devices: String, CaseIterable {
 }
 
 class Images {
-    static func getDevices() -> [String] {
+    static func getDevices() -> ([String], [String]) {
         var images: [String] = []
         for image in Devices.allCases.shuffled() {
             images.append(image.rawValue)
         }
-        return images
+        return (images, images)
     }
 }

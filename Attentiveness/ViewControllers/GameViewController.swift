@@ -8,7 +8,7 @@
 import UIKit
 
 protocol GameViewControllerDelegate {
-    func didTapCell(image: String)
+    func didTapCell(image: String, index: Int)
 }
 
 class GameViewController: UIViewController {
@@ -27,7 +27,7 @@ class GameViewController: UIViewController {
     }()
     
     private lazy var labelTitle: UILabel = {
-        setupLabel(title: "You have to find:", size: 25)
+        setupLabel(title: "You have to find:", size: 32)
     }()
     
     private lazy var imageTitle: UIImageView = {
@@ -35,6 +35,10 @@ class GameViewController: UIViewController {
         imageView.tintColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
+    }()
+    
+    private lazy var labelName: UILabel = {
+        setupLabel(title: "", size: 30)
     }()
     
     private lazy var collectionView: UICollectionView = {
@@ -51,16 +55,34 @@ class GameViewController: UIViewController {
         return collectionView
     }()
     
+    private lazy var buttonReset: UIButton = {
+        let button = UIButton(type: .system)
+        button.titleLabel?.font = UIFont(name: "copperplate", size: 25)
+        button.setTitle("RESET", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .systemGray2
+        button.layer.cornerRadius = 8
+        button.layer.shadowOpacity = 0.4
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowRadius = 4
+        button.isEnabled = false
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(reset), for: .touchUpInside)
+        return button
+    }()
+    
     private var images = Images.getDevices()
     private var imageTap = String()
-    private var indexes: [Int] = []
+    private var isHidden: [Bool] = []
+    private var countTap = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupDesign()
         setupSubviews()
         setupBarButtons()
-        getRandomName()
+        setRandomImage()
+        setHidden()
         setupConstraints()
     }
     
@@ -69,7 +91,8 @@ class GameViewController: UIViewController {
     }
     
     private func setupSubviews() {
-        setupSubviews(subviews: collectionView, labelTitle, imageTitle, on: view)
+        setupSubviews(subviews: collectionView, labelTitle, imageTitle,
+                      labelName, buttonReset, on: view)
     }
     
     private func setupSubviews(subviews: UIView..., on otherSubview: UIView) {
@@ -83,41 +106,56 @@ class GameViewController: UIViewController {
         navigationItem.leftBarButtonItem = leftButton
     }
     
-    private func setImage() {
-        let size = UIImage.SymbolConfiguration(pointSize: 40)
-        let image = images[Int.random(in: 0...images.count - 1)]
-        imageTitle.image = UIImage(systemName: image, withConfiguration: size)
-    }
-    
-    private func getRandomName() {
-        let imageName = images[Int.random(in: 0...images.count - 1)]
+    private func setRandomImage() {
+        guard !images.1.isEmpty else { return }
+        let index = Int.random(in: 0...images.1.count - 1)
+        let imageName = images.1[index]
         setPicture(image: imageName)
         imageTap = imageName
+        images.1.remove(at: index)
     }
     
     private func setPicture(image: String) {
         let size = UIImage.SymbolConfiguration(pointSize: 55)
         imageTitle.image = UIImage(systemName: image, withConfiguration: size)
+        let text = image.replacingOccurrences(of: ".", with: " ")
+        labelName.text = "\(text.capitalized)"
     }
-    /*
-    private func isThereIndex(index: Int) -> Float {
-        
+    
+    private func setHidden() {
+        images.0.forEach { _ in
+            isHidden.append(false)
+        }
     }
-    */
+    
+    private func resetIsHidden() {
+        isHidden.removeAll()
+        setHidden()
+    }
+    
     @objc private func backToMenu() {
         navigationController?.popViewController(animated: false)
+    }
+    
+    @objc private func reset() {
+        buttonOnOff(isOn: false)
+        images = Images.getDevices()
+        resetIsHidden()
+        setRandomImage()
+        collectionView.reloadData()
     }
 }
 
 extension GameViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        images.count
+        images.0.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ImagesCollectionViewCell
-        let image = images[indexPath.item]
-        cell.imageForCell(image: image, imageTap: imageTap)
+        let image = images.0[indexPath.item]
+        cell.imageForCell(image: image, imageTap: imageTap, index: indexPath.item)
+        cell.isHidden = isHidden[indexPath.item]
         cell.delegate = self
         return cell
     }
@@ -144,20 +182,48 @@ extension GameViewController {
         ])
         
         NSLayoutConstraint.activate([
-            labelTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -40),
-            labelTitle.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -80)
+            labelName.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            labelName.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -15)
         ])
         
         NSLayoutConstraint.activate([
-            imageTitle.centerYAnchor.constraint(equalTo: labelTitle.centerYAnchor),
-            imageTitle.leadingAnchor.constraint(equalTo: labelTitle.trailingAnchor, constant: 10)
+            imageTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            imageTitle.bottomAnchor.constraint(equalTo: labelName.topAnchor, constant: -15)
+        ])
+        
+        NSLayoutConstraint.activate([
+            labelTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            labelTitle.bottomAnchor.constraint(equalTo: imageTitle.topAnchor, constant: -15)
+        ])
+        
+        NSLayoutConstraint.activate([
+            buttonReset.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            buttonReset.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+            buttonReset.widthAnchor.constraint(equalToConstant: 250),
+            buttonReset.heightAnchor.constraint(equalToConstant: 45)
         ])
     }
 }
 
 extension GameViewController: GameViewControllerDelegate {
-    func didTapCell(image: String) {
-        getRandomName()
-//        collectionView.reloadData()
+    func didTapCell(image: String, index: Int) {
+        isHidden[index] = true
+        setRandomImage()
+        collectionView.reloadData()
+        isMoreTen()
+    }
+    
+    private func isMoreTen() {
+        countTap += 1
+        guard countTap > 9 else { return }
+        buttonOnOff(isOn: true)
+    }
+    
+    private func buttonOnOff(isOn: Bool) {
+        let color = isOn ? UIColor.systemGreen : UIColor.systemGray2
+        buttonReset.isEnabled = isOn
+        UIView.animate(withDuration: 0.5) {
+            self.buttonReset.backgroundColor = color
+        }
     }
 }
