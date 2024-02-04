@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C3B363B92B6F989C002A56A2 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B363B82B6F989C002A56A2 /* Settings.swift */; };
 		C3C907A22B6D577E004B0E79 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C907A12B6D577E004B0E79 /* AppDelegate.swift */; };
 		C3C907A42B6D577E004B0E79 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C907A32B6D577E004B0E79 /* SceneDelegate.swift */; };
 		C3C907A62B6D577E004B0E79 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C907A52B6D577E004B0E79 /* MenuViewController.swift */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C3B363B82B6F989C002A56A2 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		C3C9079E2B6D577E004B0E79 /* Attentiveness.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Attentiveness.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C907A12B6D577E004B0E79 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3C907A32B6D577E004B0E79 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				C3C907BE2B6D653C004B0E79 /* Images.swift */,
+				C3B363B82B6F989C002A56A2 /* Settings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -183,6 +186,7 @@
 				C3C907BF2B6D653C004B0E79 /* Images.swift in Sources */,
 				C3C907B92B6D5E96004B0E79 /* GameViewController.swift in Sources */,
 				C3C907A62B6D577E004B0E79 /* MenuViewController.swift in Sources */,
+				C3B363B92B6F989C002A56A2 /* Settings.swift in Sources */,
 				C3C907A22B6D577E004B0E79 /* AppDelegate.swift in Sources */,
 				C3C907A42B6D577E004B0E79 /* SceneDelegate.swift in Sources */,
 			);

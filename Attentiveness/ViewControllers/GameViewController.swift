@@ -12,9 +12,9 @@ protocol GameViewControllerDelegate {
 }
 
 class GameViewController: UIViewController {
-    private lazy var leftButton: UIButton = {
-        let size = UIImage.SymbolConfiguration(pointSize: 25)
-        let image = UIImage(systemName: "arrowshape.backward.fill", withConfiguration: size)
+    private lazy var buttonClose: UIButton = {
+        let size = UIImage.SymbolConfiguration(pointSize: 30)
+        let image = UIImage(systemName: "multiply", withConfiguration: size)
         let button = UIButton(type: .system)
         button.setImage(image, for: .normal)
         button.tintColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
@@ -71,7 +71,10 @@ class GameViewController: UIViewController {
         return button
     }()
     
-    private var images = Images.getDevices()
+    var images: ([String], [String])!
+    var theme: Themes!
+    var count: Count!
+    
     private var imageTap = String()
     private var isHidden: [Bool] = []
     private var countTap = 0
@@ -88,6 +91,7 @@ class GameViewController: UIViewController {
     
     private func setupDesign() {
         view.backgroundColor = #colorLiteral(red: 0.8025280833, green: 0.9857317805, blue: 0.6650850177, alpha: 1)
+        navigationItem.hidesBackButton = true
     }
     
     private func setupSubviews() {
@@ -102,8 +106,8 @@ class GameViewController: UIViewController {
     }
     
     private func setupBarButtons() {
-        let leftButton = UIBarButtonItem(customView: leftButton)
-        navigationItem.leftBarButtonItem = leftButton
+        let rightButton = UIBarButtonItem(customView: buttonClose)
+        navigationItem.rightBarButtonItem = rightButton
     }
     
     private func setRandomImage() {
@@ -139,10 +143,19 @@ class GameViewController: UIViewController {
     
     @objc private func reset() {
         buttonOnOff(isOn: false)
-        images = Images.getDevices()
+        countTap = 0
+        images = getImages(theme: theme)
         resetIsHidden()
         setRandomImage()
         collectionView.reloadData()
+    }
+    
+    private func getImages(theme: Themes) -> ([String], [String]) {
+        switch theme {
+        case .Devices: Images.getDevices(count: count)
+        case .Nature: Images.getNature(count: count)
+        default: Images.getSport(count: count)
+        }
     }
 }
 
@@ -176,9 +189,9 @@ extension GameViewController {
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            collectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            collectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 50),
             collectionView.widthAnchor.constraint(equalToConstant: 325),
-            collectionView.heightAnchor.constraint(equalToConstant: 215)
+            collectionView.heightAnchor.constraint(equalToConstant: height(count: count))
         ])
         
         NSLayoutConstraint.activate([
@@ -199,9 +212,17 @@ extension GameViewController {
         NSLayoutConstraint.activate([
             buttonReset.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             buttonReset.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
-            buttonReset.widthAnchor.constraint(equalToConstant: 250),
+            buttonReset.widthAnchor.constraint(equalToConstant: 300),
             buttonReset.heightAnchor.constraint(equalToConstant: 45)
         ])
+    }
+    
+    private func height(count: Count) -> CGFloat {
+        switch count {
+        case .twelve: return 108
+        case .twentyFour: return 215
+        default: return 324
+        }
     }
 }
 
