@@ -9,6 +9,7 @@ import UIKit
 
 protocol GameViewControllerDelegate {
     func didTapCell(image: String, index: Int)
+    func didWrondTapCell()
 }
 
 class GameViewController: UIViewController {
@@ -38,6 +39,18 @@ class GameViewController: UIViewController {
         stackView.distribution = .fillEqually
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
+    }()
+    
+    private lazy var imageFirst: UIImageView = {
+        setupImage(image: "heart.fill")
+    }()
+    
+    private lazy var imageSecond: UIImageView = {
+        setupImage(image: "heart.fill")
+    }()
+    
+    private lazy var imageThird: UIImageView = {
+        setupImage(image: "heart.fill")
     }()
     
     private lazy var buttonClose: UIButton = {
@@ -103,12 +116,13 @@ class GameViewController: UIViewController {
     private var countTap = 0
     private var timer = Timer()
     private var seconds = 3
+    private var wrong = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupDesign()
         setupSubviews()
-        setupBarButtons()
+        setupBarSubviews()
         setRandomImage()
         setHidden()
         setupConstraints()
@@ -122,8 +136,9 @@ class GameViewController: UIViewController {
     }
     
     private func setupSubviews() {
-        setupSubviews(subviews: labelTime, stackView, collectionView, labelTitle,
-                      imageTitle, labelName, buttonReset, on: view)
+        setupSubviews(subviews: imageFirst, imageSecond, imageThird, labelTime,
+                      stackView, collectionView, labelTitle, imageTitle,
+                      labelName, buttonReset, on: view)
     }
     
     private func setupSubviews(subviews: UIView..., on otherSubview: UIView) {
@@ -140,13 +155,13 @@ class GameViewController: UIViewController {
         }
     }
     
-    private func setupBarButtons() {
+    private func setupBarSubviews() {
         let rightButton = UIBarButtonItem(customView: buttonClose)
         navigationItem.rightBarButtonItem = rightButton
     }
     
     private func setRandomImage() {
-        guard !images.1.isEmpty else { return congratulations() }
+        guard !images.1.isEmpty else { return endGame() }
         let index = Int.random(in: 0...images.1.count - 1)
         let imageName = images.1[index]
         setPicture(image: imageName)
@@ -161,15 +176,27 @@ class GameViewController: UIViewController {
         labelName.text = "\(text.capitalized)"
     }
     
-    private func congratulations() {
+    private func endGame() {
+        let title = wrong < 3 ? titleVictory() : titleDefeat()
         subviewsOnOff(isOn: false)
-        setTitleTimer(time: """
-                      Congratulations!
-                      You managed to find everything.
-                      Would you like start a new game?
-                      """)
+        setTitleTimer(time: "\(title)")
         labelTime.font = UIFont(name: "copperplate", size: 32)
         opacityOnOff(subviews: buttonYes, buttonNo, opacity: 1)
+    }
+    
+    private func titleVictory() -> String {
+        """
+        Congratulations!
+        You managed to find everything.
+        Would you like start a new game?
+        """
+    }
+    
+    private func titleDefeat() -> String {
+        """
+        Unfortunately, you couldn't handle it.
+        Would you like to try again?
+        """
     }
     
     private func setHidden() {
@@ -223,8 +250,9 @@ class GameViewController: UIViewController {
     }
     
     private func subviewsOnOff(isOn: Bool) {
-        opacityOnOff(subviews: buttonClose, labelTitle, imageTitle, labelName,
-                     collectionView, buttonReset, opacity: isOn ? 1 : 0)
+        opacityOnOff(subviews: imageFirst, imageSecond, imageThird, buttonClose,
+                     labelTitle, imageTitle, labelName, collectionView,
+                     buttonReset, opacity: isOn ? 1 : 0)
         opacityOnOff(subviews: labelTime, opacity: isOn ? 0 : 1)
     }
     
@@ -235,6 +263,7 @@ class GameViewController: UIViewController {
     @objc private func reset() {
         buttonOnOff(isOn: false)
         countTap = 0
+        wrong = 0
         images = getImages(theme: theme)
         resetIsHidden()
         setRandomImage()
@@ -257,8 +286,9 @@ class GameViewController: UIViewController {
     
     @objc private func startNewGame() {
         timer.invalidate()
-        opacityOnOff(subviews: buttonClose, labelTitle, imageTitle, labelName,
-                     collectionView, buttonReset, opacity: 1)
+        opacityOnOff(subviews: imageFirst, imageSecond, imageThird, buttonClose,
+                     labelTitle, imageTitle, labelName, collectionView,
+                     buttonReset, opacity: 1)
     }
     
     @objc private func pressNo() {
@@ -316,7 +346,34 @@ extension GameViewController {
 }
 
 extension GameViewController {
+    private func setupImage(image: String) -> UIImageView {
+        let size = UIImage.SymbolConfiguration(pointSize: 28)
+        let image = UIImage(systemName: image, withConfiguration: size)
+        let imageView = UIImageView(image: image)
+        imageView.tintColor = .systemRed
+        imageView.layer.opacity = 0
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }
+}
+
+extension GameViewController {
     private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            imageFirst.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -37.5),
+            imageFirst.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10)
+        ])
+        
+        NSLayoutConstraint.activate([
+            imageSecond.centerYAnchor.constraint(equalTo: imageFirst.centerYAnchor),
+            imageSecond.leadingAnchor.constraint(equalTo: imageFirst.trailingAnchor, constant: -5)
+        ])
+        
+        NSLayoutConstraint.activate([
+            imageThird.centerYAnchor.constraint(equalTo: imageSecond.centerYAnchor),
+            imageThird.leadingAnchor.constraint(equalTo: imageSecond.trailingAnchor, constant: -5)
+        ])
+        
         NSLayoutConstraint.activate([
             labelTime.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             labelTime.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -388,6 +445,19 @@ extension GameViewController: GameViewControllerDelegate {
         buttonReset.isEnabled = isOn
         UIView.animate(withDuration: 0.5) {
             self.buttonReset.backgroundColor = color
+        }
+    }
+}
+
+extension GameViewController {
+    func didWrondTapCell() {
+        wrong += 1
+        switch wrong {
+        case 1: opacityOnOff(subviews: imageThird, opacity: 0)
+        case 2: opacityOnOff(subviews: imageSecond, opacity: 0)
+        default: 
+            opacityOnOff(subviews: imageFirst, opacity: 0)
+            endGame()
         }
     }
 }

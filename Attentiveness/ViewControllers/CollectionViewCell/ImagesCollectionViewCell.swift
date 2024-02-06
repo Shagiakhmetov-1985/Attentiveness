@@ -61,7 +61,7 @@ extension ImagesCollectionViewCell {
 
 extension ImagesCollectionViewCell {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard imageCell == imageSelect else { return }
+        guard imageCell == imageSelect else { return delegate.didWrondTapCell() }
         delegate.didTapCell(image: imageCell, index: indexCell)
     }
 }
