@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C346BD562B739588000C7807 /* PopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C346BD552B739588000C7807 /* PopUpView.swift */; };
 		C3B363B92B6F989C002A56A2 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B363B82B6F989C002A56A2 /* Settings.swift */; };
 		C3C907A22B6D577E004B0E79 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C907A12B6D577E004B0E79 /* AppDelegate.swift */; };
 		C3C907A42B6D577E004B0E79 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C907A32B6D577E004B0E79 /* SceneDelegate.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C346BD552B739588000C7807 /* PopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpView.swift; sourceTree = "<group>"; };
 		C3B363B82B6F989C002A56A2 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		C3C9079E2B6D577E004B0E79 /* Attentiveness.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Attentiveness.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C907A12B6D577E004B0E79 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -41,6 +43,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C346BD542B73954B000C7807 /* PopUpView */ = {
+			isa = PBXGroup;
+			children = (
+				C346BD552B739588000C7807 /* PopUpView.swift */,
+			);
+			path = PopUpView;
+			sourceTree = "<group>";
+		};
 		C3C907952B6D577E004B0E79 = {
 			isa = PBXGroup;
 			children = (
@@ -80,6 +90,7 @@
 		C3C907B62B6D579E004B0E79 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				C346BD542B73954B000C7807 /* PopUpView */,
 				C3C907BA2B6D620A004B0E79 /* CollectionViewCell */,
 				C3C907A52B6D577E004B0E79 /* MenuViewController.swift */,
 				C3C907B82B6D5E96004B0E79 /* GameViewController.swift */,
@@ -183,6 +194,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3C907BC2B6D622F004B0E79 /* ImagesCollectionViewCell.swift in Sources */,
+				C346BD562B739588000C7807 /* PopUpView.swift in Sources */,
 				C3C907BF2B6D653C004B0E79 /* Images.swift in Sources */,
 				C3C907B92B6D5E96004B0E79 /* GameViewController.swift in Sources */,
 				C3C907A62B6D577E004B0E79 /* MenuViewController.swift in Sources */,

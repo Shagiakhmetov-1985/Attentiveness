@@ -12,9 +12,14 @@ protocol GameViewControllerDelegate {
     func didWrondTapCell()
 }
 
+protocol PopUpViewDelegate {
+    func pressButtonYes()
+    func pressButtonNo()
+}
+
 class GameViewController: UIViewController {
     private lazy var labelTime: UILabel = {
-        setupLabel(title: "\(seconds)", size: 150, opacity: 1)
+        setupLabel(title: "", size: 150, opacity: 1)
     }()
     
     private lazy var buttonYes: UIButton = {
@@ -103,8 +108,15 @@ class GameViewController: UIViewController {
         setupButton(
             title: "RESET",
             color: .systemGray2,
-            action: #selector(reset),
+            action: #selector(pressReset),
             isEnabled: false)
+    }()
+    
+    private lazy var viewReset: UIView = {
+        let view = PopUpView()
+        view.delegate = self
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     var images: ([String], [String])!
@@ -153,6 +165,20 @@ class GameViewController: UIViewController {
                 subview.layer.opacity = opacity
             }
         }
+    }
+    
+    private func enableOnOff(subviews: UIView..., isOn: Bool) {
+        subviews.forEach { subview in
+            subview.isUserInteractionEnabled = isOn
+        }
+    }
+    
+    private func darkScreenOnOff(isOn: Bool) {
+        let opacity: Float = isOn ? 0.4 : 1
+        opacityOnOff(subviews: imageFirst, imageSecond, imageThird, buttonClose,
+                     labelTitle, imageTitle, labelName, collectionView,
+                     buttonReset, opacity: opacity)
+        enableOnOff(subviews: buttonClose, collectionView, buttonReset, isOn: !isOn)
     }
     
     private func setupBarSubviews() {
@@ -216,6 +242,8 @@ class GameViewController: UIViewController {
     }
     
     private func startGame() {
+        labelTime.font = UIFont(name: "copperplate", size: 150)
+        setTitleTimer(time: "\(seconds)")
         showTime(time: 1, scale: 1.5)
         timer = runTimer(time: 1, action: #selector(runTime), repeats: true)
     }
@@ -260,10 +288,25 @@ class GameViewController: UIViewController {
         navigationController?.popViewController(animated: false)
     }
     
+    @objc private func pressReset() {
+        setupSubviews(subviews: viewReset, on: view)
+        setupConstraintsView()
+        darkScreenOnOff(isOn: true)
+        
+        viewReset.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        viewReset.alpha = 0
+        UIView.animate(withDuration: 0.5) { [self] in
+            view.backgroundColor = #colorLiteral(red: 0.8025280833, green: 0.9857317805, blue: 0.6650850177, alpha: 1).withAlphaComponent(0.4)
+            viewReset.alpha = 1
+            viewReset.transform = .identity
+        }
+    }
+    
     @objc private func reset() {
         buttonOnOff(isOn: false)
         countTap = 0
         wrong = 0
+        seconds = 3
         images = getImages(theme: theme)
         resetIsHidden()
         setRandomImage()
@@ -424,6 +467,15 @@ extension GameViewController {
         default: return 324
         }
     }
+    
+    private func setupConstraintsView() {
+        NSLayoutConstraint.activate([
+            viewReset.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            viewReset.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            viewReset.heightAnchor.constraint(equalToConstant: 150),
+            viewReset.widthAnchor.constraint(equalToConstant: 320)
+        ])
+    }
 }
 
 extension GameViewController: GameViewControllerDelegate {
@@ -458,6 +510,45 @@ extension GameViewController {
         default: 
             opacityOnOff(subviews: imageFirst, opacity: 0)
             endGame()
+        }
+    }
+}
+
+extension GameViewController: PopUpViewDelegate {
+    func pressButtonYes() {
+        closeView()
+        timer = runTimer(time: 0.6, action: #selector(dataReset), repeats: false)
+    }
+    
+    func pressButtonNo() {
+        closeView()
+    }
+    
+    private func closeView() {
+        darkScreenOnOff(isOn: false)
+        removeView()
+    }
+    
+    @objc private func dataReset() {
+        timer.invalidate()
+        subviewsOnOff(isOn: false)
+        hideTime()
+        timer = runTimer(time: 0.6, action: #selector(startReset), repeats: false)
+    }
+    
+    @objc private func startReset() {
+        timer.invalidate()
+        reset()
+        startGame()
+    }
+    
+    private func removeView() {
+        UIView.animate(withDuration: 0.5) { [self] in
+            viewReset.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+            viewReset.alpha = 0
+            view.backgroundColor = #colorLiteral(red: 0.8025280833, green: 0.9857317805, blue: 0.6650850177, alpha: 1)
+        } completion: { [self] _ in
+            viewReset.removeFromSuperview()
         }
     }
 }
