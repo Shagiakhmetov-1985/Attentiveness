@@ -82,7 +82,9 @@ class MenuViewController: UIViewController {
         switch theme {
         case .Devices: Images.getDevices(count: countOfImages)
         case .Nature: Images.getNature(count: countOfImages)
-        default: Images.getSport(count: countOfImages)
+        case .Sport: Images.getSport(count: countOfImages)
+        case .House: Images.getHouse(count: countOfImages)
+        default: Images.getTools(count: countOfImages)
         }
     }
 }
@@ -117,7 +119,9 @@ extension MenuViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         switch row {
         case 0: theme = .Devices
         case 1: theme = .Nature
-        default: theme = .Sport
+        case 2: theme = .Sport
+        case 3: theme = .House
+        default: theme = .Tools
         }
     }
     

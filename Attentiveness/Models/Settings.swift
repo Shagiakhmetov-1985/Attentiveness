@@ -11,8 +11,8 @@ enum Themes: String, CaseIterable {
     case Devices
     case Nature
     case Sport
-//    case House
-//    case Tools
+    case House
+    case Tools
 }
 
 enum Count: Int, CaseIterable {

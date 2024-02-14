@@ -40,6 +40,28 @@ class Images {
         }
         return (images, images)
     }
+    
+    static func getHouse(count: Count) -> ([String], [String]) {
+        var images: [String] = []
+        for image in House.allCases.shuffled() {
+            images.append(image.rawValue)
+            if images.count == count.rawValue {
+                break
+            }
+        }
+        return (images, images)
+    }
+    
+    static func getTools(count: Count) -> ([String], [String]) {
+        var images: [String] = []
+        for image in Tools.allCases.shuffled() {
+            images.append(image.rawValue)
+            if images.count == count.rawValue {
+                break
+            }
+        }
+        return (images, images)
+    }
 }
 
 enum Devices: String, CaseIterable {
@@ -157,4 +179,82 @@ enum Sport: String, CaseIterable {
     case figurerolling = "figure.rolling"
     case figurerugby = "figure.rugby"
     case figuresoccer = "figure.soccer"
+}
+
+enum House: String, CaseIterable {
+    case house
+    case lightbulb
+    case lightbulbmin = "lightbulb.min"
+    case lightbulbmax = "lightbulb.max"
+    case lightbulbled = "lightbulb.led"
+    case lightbulbledwide = "lightbulb.led.wide"
+    case fan
+    case fandesk = "fan.desk"
+    case fanfloor = "fan.floor"
+    case lampdesk = "lamp.desk"
+    case lampfloor = "lamp.floor"
+    case lampceiling = "lamp.ceiling"
+    case poweroutlettypea = "poweroutlet.type.a"
+    case poweroutlettypec = "poweroutlet.type.c"
+    case webcamera = "web.camera"
+    case rollershadeopen = "roller.shade.open"
+    case rollershadeclosed = "roller.shade.closed"
+    case romanshadeopen = "roman.shade.open"
+    case romanshadeclosed = "roman.shade.closed"
+    case curtainsopen = "curtains.open"
+    case curtainsclosed = "curtains.closed"
+    case airpurifier = "air.purifier"
+    case dehumidifier
+    case humidifier
+    case spigot
+    case shower
+    case bathtub
+    case sensor
+    case videoprojector
+    case wifirouter = "wifi.router"
+    case balloon
+    case sofa
+    case stove
+    case dryer
+    case chairlounge = "chair.lounge"
+    case washer
+}
+
+enum Tools: String, CaseIterable {
+    case pencil
+    case eraser
+    case highlighter
+    case lasso
+    case trash
+    case folder
+    case paperplane
+    case tray
+    case externaldrive
+    case internaldrive
+    case opticaldiscdrive
+    case archivebox
+    case doc
+    case clipboard
+    case note
+    case calendar
+    case book
+    case menucard
+    case greetingcard
+    case magazine
+    case newspaper
+    case bookmark
+    case ruler
+    case backpack
+    case paperclip
+    case soccerball
+    case baseball
+    case basketball
+    case tennisracket = "tennis.racket"
+    case hockeypuck = "hockey.puck"
+    case tennisball
+    case skateboard
+    case skis
+    case snowboard
+    case umbrella
+    case megaphone
 }

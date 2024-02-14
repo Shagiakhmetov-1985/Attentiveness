@@ -146,7 +146,7 @@ class GameViewController: UIViewController {
         setupConstraints()
         startGame()
     }
-    
+    // MARK: - General methods
     private func setupDesign() {
         view.backgroundColor = #colorLiteral(red: 0.8025280833, green: 0.9857317805, blue: 0.6650850177, alpha: 1)
         navigationItem.hidesBackButton = true
@@ -187,11 +187,70 @@ class GameViewController: UIViewController {
         enableOnOff(subviews: buttonClose, collectionView, buttonReset, isOn: !isOn)
     }
     
+    private func subviewsOnOff(isOn: Bool) {
+        opacityOnOff(subviews: imageFirst, imageSecond, imageThird, labelCountdown,
+                     buttonClose, labelTitle, imageTitle, labelName, collectionView,
+                     buttonReset, opacity: isOn ? 1 : 0)
+        opacityOnOff(subviews: labelTime, opacity: isOn ? 0 : 1)
+    }
+    
     private func setupBarSubviews() {
         let rightButton = UIBarButtonItem(customView: buttonClose)
         navigationItem.rightBarButtonItem = rightButton
     }
     
+    private func runTimer(time: CGFloat, action: Selector, repeats: Bool) -> Timer {
+        Timer.scheduledTimer(timeInterval: time, target: self, selector: action,
+                             userInfo: nil, repeats: repeats)
+    }
+    
+    private func setHidden() {
+        images.0.forEach { _ in
+            isHidden.append(false)
+        }
+    }
+    
+    private func resetIsHidden() {
+        isHidden.removeAll()
+        setHidden()
+    }
+    
+    private func setTitle(_ label: UILabel, _ title: String, _ size: CGFloat) {
+        label.text = title
+        label.font = UIFont(name: "copperplate", size: size)
+    }
+    // MARK: - Animation title timer
+    private func hideTime() {
+        labelTime.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+    }
+    
+    private func showTime(time: CGFloat, scale: CGFloat) {
+        UIView.animate(withDuration: time) {
+            self.labelTime.transform = CGAffineTransform(scaleX: scale, y: scale)
+        }
+    }
+    // MARK: - Circle countdown
+    private func setCircleCountdown() {
+        circularShadow()
+        circular(strokeEnd: 0)
+        animationCircleCountdownReset()
+    }
+    
+    private func setTitleCountdown() {
+        seconds = timeCoundown(count: count)
+        labelCountdown.text = "\(seconds)"
+    }
+    // MARK: - Get images for game
+    private func getImages(theme: Themes) -> ([String], [String]) {
+        switch theme {
+        case .Devices: Images.getDevices(count: count)
+        case .Nature: Images.getNature(count: count)
+        case .Sport: Images.getSport(count: count)
+        case .House: Images.getHouse(count: count)
+        default: Images.getTools(count: count)
+        }
+    }
+    // MARK: - Start game
     private func setRandomImage() {
         guard !images.1.isEmpty else { return endGame() }
         let index = Int.random(in: 0...images.1.count - 1)
@@ -206,46 +265,6 @@ class GameViewController: UIViewController {
         imageTitle.image = UIImage(systemName: image, withConfiguration: size)
         let text = image.replacingOccurrences(of: ".", with: " ")
         labelName.text = "\(text.capitalized)"
-    }
-    
-    private func endGame() {
-        timer.invalidate()
-        seconds > 0 ? stopAnimationCircleCountdown() : ()
-        let title = wrong < 3 ? titleVictory() : titleDefeat()
-        subviewsOnOff(isOn: false)
-        setTitle(labelTime, "\(title)", 32)
-        opacityOnOff(subviews: buttonYes, buttonNo, opacity: 1)
-    }
-    
-    private func titleVictory() -> String {
-        """
-        Congratulations!
-        You managed to find everything.
-        Would you like start a new game?
-        """
-    }
-    
-    private func titleDefeat() -> String {
-        """
-        Unfortunately, you couldn't handle it.
-        Would you like to try again?
-        """
-    }
-    
-    private func setHidden() {
-        images.0.forEach { _ in
-            isHidden.append(false)
-        }
-    }
-    
-    private func resetIsHidden() {
-        isHidden.removeAll()
-        setHidden()
-    }
-    
-    private func runTimer(time: CGFloat, action: Selector, repeats: Bool) -> Timer {
-        Timer.scheduledTimer(timeInterval: time, target: self, selector: action,
-                             userInfo: nil, repeats: repeats)
     }
     
     private func startGame() {
@@ -263,46 +282,40 @@ class GameViewController: UIViewController {
         timer.invalidate()
         timer = runTimer(time: 0.6, action: #selector(showSubviews), repeats: false)
     }
-    
-    private func showTime(time: CGFloat, scale: CGFloat) {
-        UIView.animate(withDuration: time) {
-            self.labelTime.transform = CGAffineTransform(scaleX: scale, y: scale)
-        }
+    // MARK: - End game, victory or defeat
+    private func endGame() {
+        timer.invalidate()
+        let title = wrong < 3 ? titleVictory() : titleDefeat()
+        setTitle(labelTime, "\(title)", 32)
+        
+        subviewsOnOff(isOn: false)
+        opacityOnOff(subviews: buttonYes, buttonNo, opacity: 1)
+        
+        guard seconds > 0 else { return }
+        stopAnimationCircleCountdown()
     }
     
-    private func hideTime() {
-        labelTime.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+    private func titleVictory() -> String {
+        """
+        Congratulations!
+        You managed to find everything.
+        Would you like start a new game?
+        """
     }
     
-    private func setTitle(_ label: UILabel, _ title: String, _ size: CGFloat) {
-        label.text = title
-        label.font = UIFont(name: "copperplate", size: size)
+    private func titleDefeat() -> String {
+        """
+        Unfortunately, you couldn't handle it.
+        Would you like to try again?
+        """
     }
-    
+    // MARK: - Subviews are available
     @objc private func showSubviews() {
         timer.invalidate()
         subviewsOnOff(isOn: true)
         setCircleCountdown()
         setTitleCountdown()
         timer = runTimer(time: 0.6, action: #selector(runCountdown), repeats: false)
-    }
-    
-    private func setCircleCountdown() {
-        circularShadow()
-        circular(strokeEnd: 0)
-        animationCircleCountdownReset()
-    }
-    
-    private func setTitleCountdown() {
-        seconds = timeCoundown(count: count)
-        labelCountdown.text = "\(seconds)"
-    }
-    
-    private func subviewsOnOff(isOn: Bool) {
-        opacityOnOff(subviews: imageFirst, imageSecond, imageThird, labelCountdown,
-                     buttonClose, labelTitle, imageTitle, labelName, collectionView,
-                     buttonReset, opacity: isOn ? 1 : 0)
-        opacityOnOff(subviews: labelTime, opacity: isOn ? 0 : 1)
     }
     
     @objc private func runCountdown() {
@@ -319,13 +332,16 @@ class GameViewController: UIViewController {
         timer.invalidate()
         wrong = 3
         endGame()
+        guard viewReset.isUserInteractionEnabled else { return }
+        removeView()
+        enableOnOff(subviews: buttonClose, collectionView, buttonReset, isOn: true)
     }
-    
+    // MARK: - Button for back to menu
     @objc private func backToMenu() {
         timer.invalidate()
         navigationController?.popViewController(animated: false)
     }
-    
+    // MARK: - Button for reset game
     @objc private func pressReset() {
         setupSubviews(subviews: viewReset, on: view)
         setupConstraintsView()
@@ -350,15 +366,7 @@ class GameViewController: UIViewController {
         setRandomImage()
         collectionView.reloadData()
     }
-    
-    private func getImages(theme: Themes) -> ([String], [String]) {
-        switch theme {
-        case .Devices: Images.getDevices(count: count)
-        case .Nature: Images.getNature(count: count)
-        default: Images.getSport(count: count)
-        }
-    }
-    
+    // MARK: - Buttons for countinue game or back to menu after victory or defeat
     @objc private func pressYes() {
         opacityOnOff(subviews: labelTime, buttonYes, buttonNo, opacity: 0)
         reset()
@@ -380,7 +388,7 @@ class GameViewController: UIViewController {
         navigationController?.popViewController(animated: false)
     }
 }
-
+// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
 extension GameViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         images.0.count
@@ -395,7 +403,7 @@ extension GameViewController: UICollectionViewDelegate, UICollectionViewDataSour
         return cell
     }
 }
-
+// MARK: - Methods for setup subviews
 extension GameViewController {
     private func setupLabel(title: String, size: CGFloat, opacity: Float? = nil) -> UILabel {
         let label = UILabel()
@@ -455,7 +463,7 @@ extension GameViewController {
         return imageView
     }
 }
-
+// MARK: - Constraints
 extension GameViewController {
     private func setupConstraints() {
         NSLayoutConstraint.activate([
@@ -531,7 +539,7 @@ extension GameViewController {
         ])
     }
 }
-
+// MARK: - Setup circle countdown
 extension GameViewController {
     private func circularShadow() {
         let center = CGPoint(x: labelCountdown.center.x, y: labelCountdown.center.y + 17.5)
@@ -601,13 +609,13 @@ extension GameViewController {
     
     private func timeCoundown(count: Count) -> Int {
         switch count {
-        case .twelve: return 20
-        case .twentyFour: return 40
-        default: return 60
+        case .twelve: return 25
+        case .twentyFour: return 60
+        default: return 95
         }
     }
 }
-
+// MARK: - GameViewControllerDelegate
 extension GameViewController: GameViewControllerDelegate {
     func didTapCell(image: String, index: Int) {
         isHidden[index] = true
@@ -657,10 +665,12 @@ extension GameViewController {
         }
     }
 }
-
+// MARK: - PopUpViewDelegate
 extension GameViewController: PopUpViewDelegate {
     func pressButtonYes() {
+        timer.invalidate()
         closeView()
+        stopAnimationCircleCountdown()
         timer = runTimer(time: 0.6, action: #selector(dataReset), repeats: false)
     }
     
