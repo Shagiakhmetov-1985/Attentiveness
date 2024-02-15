@@ -45,18 +45,21 @@ class MenuViewController: UIViewController {
     
     let themes = Themes.allCases
     let count = Count.allCases
-    var theme = Themes.Devices
-    var countOfImages = Count.twelve
+    var theme: Themes!
+    var countOfImages: Count!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupDesign()
         setupSubviews()
         setupConstraints()
+        setRowPickerView()
     }
     
     private func setupDesign() {
         view.backgroundColor = #colorLiteral(red: 0.8025280833, green: 0.9857317805, blue: 0.6650850177, alpha: 1)
+        theme = StorageManager.shared.fetchData().0
+        countOfImages = StorageManager.shared.fetchData().1
     }
     
     private func setupSubviews() {
@@ -67,6 +70,31 @@ class MenuViewController: UIViewController {
     private func setupSubviews(subviews: UIView..., on otherSubview: UIView) {
         subviews.forEach { subview in
             otherSubview.addSubview(subview)
+        }
+    }
+    
+    private func setRowPickerView() {
+        let theme = setTheme(theme: theme)
+        let count = setCount(count: countOfImages)
+        pickerViewTheme.selectRow(theme, inComponent: 0, animated: false)
+        pickerViewCount.selectRow(count, inComponent: 0, animated: false)
+    }
+    
+    private func setTheme(theme: Themes) -> Int {
+        switch theme {
+        case .Devices: 0
+        case .Nature: 1
+        case .Sport: 2
+        case .House: 3
+        default: 4
+        }
+    }
+    
+    private func setCount(count: Count) -> Int {
+        switch count {
+        case .twelve: 0
+        case .twentyFour: 1
+        default: 2
         }
     }
     
@@ -113,6 +141,7 @@ extension MenuViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         pickerView.tag == 0 ? setTheme(row: row) : setCountOfImages(row: row)
+        saveData()
     }
     
     private func setTheme(row: Int) {
@@ -131,6 +160,10 @@ extension MenuViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         case 1: countOfImages = .twentyFour
         default: countOfImages = .thirtySix
         }
+    }
+    
+    private func saveData() {
+        StorageManager.shared.saveData(theme: theme, count: countOfImages)
     }
 }
 

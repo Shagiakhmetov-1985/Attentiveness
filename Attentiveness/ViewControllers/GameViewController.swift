@@ -181,10 +181,27 @@ class GameViewController: UIViewController {
     
     private func darkScreenOnOff(isOn: Bool) {
         let opacity: Float = isOn ? 0.4 : 1
-        opacityOnOff(subviews: imageFirst, imageSecond, imageThird, labelCountdown,
-                     buttonClose, labelTitle, imageTitle, labelName, collectionView,
-                     buttonReset, opacity: opacity)
+        let subviews = checkOpacity(
+            views: imageFirst, imageSecond, imageThird, labelCountdown, buttonClose,
+            labelTitle, imageTitle, labelName, collectionView, buttonReset)
         enableOnOff(subviews: buttonClose, collectionView, buttonReset, isOn: !isOn)
+        darkScreen(subviews: subviews, opacity: opacity)
+    }
+    
+    private func checkOpacity(views: UIView...) -> [UIView] {
+        var subviews: [UIView] = []
+        views.forEach { view in
+            if view.layer.opacity > 0 {
+                subviews.append(view)
+            }
+        }
+        return subviews
+    }
+    
+    private func darkScreen(subviews: [UIView], opacity: Float) {
+        subviews.forEach { subview in
+            opacityOnOff(subviews: subview, opacity: opacity)
+        }
     }
     
     private func subviewsOnOff(isOn: Bool) {
@@ -192,6 +209,12 @@ class GameViewController: UIViewController {
                      buttonClose, labelTitle, imageTitle, labelName, collectionView,
                      buttonReset, opacity: isOn ? 1 : 0)
         opacityOnOff(subviews: labelTime, opacity: isOn ? 0 : 1)
+    }
+    
+    private func subviewsForGameOnOff(isOn: Bool) {
+        opacityOnOff(subviews: imageFirst, imageSecond, imageThird, labelCountdown,
+                     buttonClose, labelTitle, imageTitle, labelName, collectionView,
+                     buttonReset, opacity: isOn ? 1 : 0)
     }
     
     private func setupBarSubviews() {
@@ -233,12 +256,20 @@ class GameViewController: UIViewController {
     private func setCircleCountdown() {
         circularShadow()
         circular(strokeEnd: 0)
-        animationCircleCountdownReset()
+        animationResetCircleCountdown()
     }
     
     private func setTitleCountdown() {
         seconds = timeCoundown(count: count)
         labelCountdown.text = "\(seconds)"
+    }
+    
+    private func resetCircleCountdown() {
+        let fullTime = timeCoundown(count: count)
+        let time = CGFloat(seconds) / CGFloat(fullTime)
+        let result = round(100 * time) / 100
+        shapeLayer.strokeEnd = result
+        animationResetCircleCountdown()
     }
     // MARK: - Get images for game
     private func getImages(theme: Themes) -> ([String], [String]) {
@@ -360,7 +391,6 @@ class GameViewController: UIViewController {
         buttonOnOff(isOn: false)
         countTap = 0
         wrong = 0
-        seconds = 3
         images = getImages(theme: theme)
         resetIsHidden()
         setRandomImage()
@@ -375,11 +405,8 @@ class GameViewController: UIViewController {
     
     @objc private func startNewGame() {
         timer.invalidate()
-        opacityOnOff(subviews: imageFirst, imageSecond, imageThird, labelCountdown,
-                     buttonClose, labelTitle, imageTitle, labelName, collectionView,
-                     buttonReset, opacity: 1)
-        shapeLayer.strokeEnd = 0
-        animationCircleCountdownReset()
+        subviewsForGameOnOff(isOn: true)
+        resetCircleCountdown()
         setTitleCountdown()
         timer = runTimer(time: 0.6, action: #selector(runCountdown), repeats: false)
     }
@@ -590,7 +617,7 @@ extension GameViewController {
         shapeLayer.add(animation, forKey: "animation")
     }
     
-    private func animationCircleCountdownReset() {
+    private func animationResetCircleCountdown() {
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.toValue = 1
         animation.duration = CFTimeInterval(0.4)
@@ -685,15 +712,14 @@ extension GameViewController: PopUpViewDelegate {
     
     @objc private func dataReset() {
         timer.invalidate()
-        subviewsOnOff(isOn: false)
-        hideTime()
+        subviewsForGameOnOff(isOn: false)
         timer = runTimer(time: 0.6, action: #selector(startReset), repeats: false)
     }
     
     @objc private func startReset() {
         timer.invalidate()
         reset()
-        startGame()
+        startNewGame()
     }
     
     private func removeView() {

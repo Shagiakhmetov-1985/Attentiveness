@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C346BD562B739588000C7807 /* PopUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C346BD552B739588000C7807 /* PopUpView.swift */; };
+		C3A2D35F2B7E7B8D00DD4428 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A2D35E2B7E7B8D00DD4428 /* StorageManager.swift */; };
 		C3B363B92B6F989C002A56A2 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B363B82B6F989C002A56A2 /* Settings.swift */; };
 		C3C907A22B6D577E004B0E79 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C907A12B6D577E004B0E79 /* AppDelegate.swift */; };
 		C3C907A42B6D577E004B0E79 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C907A32B6D577E004B0E79 /* SceneDelegate.swift */; };
@@ -20,6 +21,7 @@
 
 /* Begin PBXFileReference section */
 		C346BD552B739588000C7807 /* PopUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpView.swift; sourceTree = "<group>"; };
+		C3A2D35E2B7E7B8D00DD4428 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		C3B363B82B6F989C002A56A2 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		C3C9079E2B6D577E004B0E79 /* Attentiveness.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Attentiveness.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C907A12B6D577E004B0E79 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -51,6 +53,14 @@
 			path = PopUpView;
 			sourceTree = "<group>";
 		};
+		C3A2D35D2B7E7B7800DD4428 /* StorageManager */ = {
+			isa = PBXGroup;
+			children = (
+				C3A2D35E2B7E7B8D00DD4428 /* StorageManager.swift */,
+			);
+			path = StorageManager;
+			sourceTree = "<group>";
+		};
 		C3C907952B6D577E004B0E79 = {
 			isa = PBXGroup;
 			children = (
@@ -70,6 +80,7 @@
 		C3C907A02B6D577E004B0E79 /* Attentiveness */ = {
 			isa = PBXGroup;
 			children = (
+				C3A2D35D2B7E7B7800DD4428 /* StorageManager */,
 				C3C907B72B6D57A9004B0E79 /* Applications */,
 				C3C907BD2B6D6527004B0E79 /* Models */,
 				C3C907B62B6D579E004B0E79 /* ViewControllers */,
@@ -196,6 +207,7 @@
 				C3C907BC2B6D622F004B0E79 /* ImagesCollectionViewCell.swift in Sources */,
 				C346BD562B739588000C7807 /* PopUpView.swift in Sources */,
 				C3C907BF2B6D653C004B0E79 /* Images.swift in Sources */,
+				C3A2D35F2B7E7B8D00DD4428 /* StorageManager.swift in Sources */,
 				C3C907B92B6D5E96004B0E79 /* GameViewController.swift in Sources */,
 				C3C907A62B6D577E004B0E79 /* MenuViewController.swift in Sources */,
 				C3B363B92B6F989C002A56A2 /* Settings.swift in Sources */,
